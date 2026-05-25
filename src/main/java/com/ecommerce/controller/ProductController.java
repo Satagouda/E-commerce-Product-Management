@@ -1,36 +1,32 @@
 package com.ecommerce.controller;
 
-
-
+import com.ecommerce.ApiResponse;
+import com.ecommerce.ApiResponseUtil;
 import com.ecommerce.dto.ProductDTO;
 import com.ecommerce.dto.SearchResponseDTO;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@Tag(name = "Products", description = "Product management APIs")
 public class ProductController {
 
     private final ProductService productService;
     private final SearchService searchService;
+
     /**
      * Create Product
      */
@@ -38,16 +34,9 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(
             summary = "Create Product",
-            description = "Create a new product",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Product created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
-    })
-    public ResponseEntity<ProductDTO> createProduct(
+    public ResponseEntity<ApiResponse<ProductDTO>> createProduct(
             @Valid @RequestBody ProductDTO productDTO
     ) {
 
@@ -56,9 +45,10 @@ public class ProductController {
         ProductDTO createdProduct =
                 productService.createProduct(productDTO);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdProduct);
+        return ApiResponseUtil.created(
+                "Product created successfully",
+                createdProduct
+        );
     }
 
     /**
@@ -66,7 +56,7 @@ public class ProductController {
      */
     @GetMapping
     @Operation(summary = "Get all products")
-    public ResponseEntity<Page<ProductDTO>> getAllProducts(
+    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getAllProducts(
 
             @RequestParam(defaultValue = "0")
             int page,
@@ -83,13 +73,17 @@ public class ProductController {
 
         log.info("GET /api/products");
 
-        return ResponseEntity.ok(
+        Page<ProductDTO> products =
                 productService.getAllProducts(
                         page,
                         size,
                         sortBy,
                         sortDir
-                )
+                );
+
+        return ApiResponseUtil.success(
+                "Products fetched successfully",
+                products
         );
     }
 
@@ -98,14 +92,18 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get product by ID")
-    public ResponseEntity<ProductDTO> getProductById(
+    public ResponseEntity<ApiResponse<ProductDTO>> getProductById(
             @PathVariable Long id
     ) {
 
         log.info("GET /api/products/{}", id);
 
-        return ResponseEntity.ok(
-                productService.getProductById(id)
+        ProductDTO product =
+                productService.getProductById(id);
+
+        return ApiResponseUtil.success(
+                "Product fetched successfully",
+                product
         );
     }
 
@@ -118,7 +116,7 @@ public class ProductController {
             summary = "Update Product",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    public ResponseEntity<ProductDTO> updateProduct(
+    public ResponseEntity<ApiResponse<ProductDTO>> updateProduct(
 
             @PathVariable Long id,
 
@@ -127,8 +125,12 @@ public class ProductController {
 
         log.info("PUT /api/products/{}", id);
 
-        return ResponseEntity.ok(
-                productService.updateProduct(id, productDTO)
+        ProductDTO updatedProduct =
+                productService.updateProduct(id, productDTO);
+
+        return ApiResponseUtil.success(
+                "Product updated successfully",
+                updatedProduct
         );
     }
 
@@ -141,7 +143,7 @@ public class ProductController {
             summary = "Delete Product",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    public ResponseEntity<Void> deleteProduct(
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
             @PathVariable Long id
     ) {
 
@@ -149,7 +151,10 @@ public class ProductController {
 
         productService.deleteProduct(id);
 
-        return ResponseEntity.noContent().build();
+        return ApiResponseUtil.success(
+                "Product deleted successfully",
+                null
+        );
     }
 
     /**
@@ -157,7 +162,7 @@ public class ProductController {
      */
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "Get products by category")
-    public ResponseEntity<Page<ProductDTO>> getProductsByCategory(
+    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProductsByCategory(
 
             @PathVariable Long categoryId,
 
@@ -168,12 +173,16 @@ public class ProductController {
             int size
     ) {
 
-        return ResponseEntity.ok(
+        Page<ProductDTO> products =
                 productService.getProductsByCategory(
                         categoryId,
                         page,
                         size
-                )
+                );
+
+        return ApiResponseUtil.success(
+                "Category products fetched successfully",
+                products
         );
     }
 
@@ -182,7 +191,7 @@ public class ProductController {
      */
     @GetMapping("/brand/{brandId}")
     @Operation(summary = "Get products by brand")
-    public ResponseEntity<Page<ProductDTO>> getProductsByBrand(
+    public ResponseEntity<ApiResponse<Page<ProductDTO>>> getProductsByBrand(
 
             @PathVariable Long brandId,
 
@@ -193,48 +202,34 @@ public class ProductController {
             int size
     ) {
 
-        return ResponseEntity.ok(
+        Page<ProductDTO> products =
                 productService.getProductsByBrand(
                         brandId,
                         page,
                         size
-                )
+                );
+
+        return ApiResponseUtil.success(
+                "Brand products fetched successfully",
+                products
         );
     }
 
-//    /**
-//     * Search products
-//     */
-//    @GetMapping("/search")
-//    @Operation(summary = "Search products")
-//    public ResponseEntity<Page<ProductDTO>> searchProducts(
-//
-//            @RequestParam String keyword,
-//
-//            @RequestParam(defaultValue = "0")
-//            int page,
-//
-//            @RequestParam(defaultValue = "10")
-//            int size
-//    ) {
-//
-//        return ResponseEntity.ok(
-//                productService.searchProducts(
-//                        keyword,
-//                        page,
-//                        size
-//                )
-//        );
-//    }
-
+    /**
+     * Smart Search Products
+     */
     @GetMapping("/search")
     @Operation(summary = "Smart search products")
-    public ResponseEntity<SearchResponseDTO> searchProducts(
+    public ResponseEntity<ApiResponse<SearchResponseDTO>> searchProducts(
             @RequestParam String keyword
     ) {
 
-        return ResponseEntity.ok(
-                searchService.searchProducts(keyword)
+        SearchResponseDTO response =
+                searchService.searchProducts(keyword);
+
+        return ApiResponseUtil.success(
+                "Search completed successfully",
+                response
         );
     }
 }

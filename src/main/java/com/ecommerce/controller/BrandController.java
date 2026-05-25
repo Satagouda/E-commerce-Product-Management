@@ -1,17 +1,16 @@
 package com.ecommerce.controller;
 
-
-
+import com.ecommerce.ApiResponse;
+import com.ecommerce.ApiResponseUtil;
 import com.ecommerce.dto.DTOBundles.BrandDTO;
-
 import com.ecommerce.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
+@Tag(
+        name = "Brands",
+        description = "Brand management APIs"
+)
 public class BrandController {
 
     private final BrandService brandService;
@@ -30,12 +33,16 @@ public class BrandController {
      */
     @GetMapping
     @Operation(summary = "Get all brands")
-    public ResponseEntity<List<BrandDTO>> getAllBrands() {
+    public ResponseEntity<ApiResponse<List<BrandDTO>>> getAllBrands() {
 
         log.info("GET /api/brands - Fetching all brands");
 
-        return ResponseEntity.ok(
-                brandService.getAllBrands()
+        List<BrandDTO> brands =
+                brandService.getAllBrands();
+
+        return ApiResponseUtil.success(
+                "Brands fetched successfully",
+                brands
         );
     }
 
@@ -44,14 +51,18 @@ public class BrandController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get brand by ID")
-    public ResponseEntity<BrandDTO> getBrandById(
+    public ResponseEntity<ApiResponse<BrandDTO>> getBrandById(
             @PathVariable Long id
     ) {
 
         log.info("GET /api/brands/{} - Fetching brand", id);
 
-        return ResponseEntity.ok(
-                brandService.getBrandById(id)
+        BrandDTO brand =
+                brandService.getBrandById(id);
+
+        return ApiResponseUtil.success(
+                "Brand fetched successfully",
+                brand
         );
     }
 
@@ -64,12 +75,7 @@ public class BrandController {
             summary = "Create new brand",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Brand created successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
-    })
-    public ResponseEntity<BrandDTO> createBrand(
+    public ResponseEntity<ApiResponse<BrandDTO>> createBrand(
             @Valid @RequestBody BrandDTO brandDTO
     ) {
 
@@ -78,9 +84,10 @@ public class BrandController {
         BrandDTO createdBrand =
                 brandService.createBrand(brandDTO);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdBrand);
+        return ApiResponseUtil.created(
+                "Brand created successfully",
+                createdBrand
+        );
     }
 
     /**
@@ -92,15 +99,19 @@ public class BrandController {
             summary = "Update brand",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    public ResponseEntity<BrandDTO> updateBrand(
+    public ResponseEntity<ApiResponse<BrandDTO>> updateBrand(
             @PathVariable Long id,
             @Valid @RequestBody BrandDTO brandDTO
     ) {
 
         log.info("PUT /api/brands/{} - Updating brand", id);
 
-        return ResponseEntity.ok(
-                brandService.updateBrand(id, brandDTO)
+        BrandDTO updatedBrand =
+                brandService.updateBrand(id, brandDTO);
+
+        return ApiResponseUtil.success(
+                "Brand updated successfully",
+                updatedBrand
         );
     }
 
@@ -113,7 +124,7 @@ public class BrandController {
             summary = "Delete brand",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    public ResponseEntity<Void> deleteBrand(
+    public ResponseEntity<ApiResponse<Void>> deleteBrand(
             @PathVariable Long id
     ) {
 
@@ -121,6 +132,9 @@ public class BrandController {
 
         brandService.deleteBrand(id);
 
-        return ResponseEntity.noContent().build();
+        return ApiResponseUtil.success(
+                "Brand deleted successfully",
+                null
+        );
     }
 }
