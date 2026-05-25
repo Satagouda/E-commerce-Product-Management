@@ -1,300 +1,299 @@
-# Spring Boot E-Commerce Project Structure
+# Project Structure
 
-## 📁 Complete Project File Organization
-
-```
-spring-boot-ecommerce/
+```text
+src/main/java/com/ecommerce
 │
-├── 📄 pom.xml                                    # Maven dependencies and project configuration
-├── 📄 docker-compose.yml                        # Docker services (PostgreSQL, Redis, Meilisearch)
-├── 📄 Dockerfile                                # Spring Boot app container configuration
-├── 📄 README.md                                 # Comprehensive project documentation
-├── 📄 .gitignore                                # Git ignore rules
+├── config/
+│   ├── 📄 AuditingConfig.java           # JPA auditing configuration
+│   ├── 📄 CacheConfig.java              # Redis cache configuration
+│   ├── 📄 MeiliConfig.java              # Meilisearch client configuration
+│   ├── 📄 OpenApiConfig.java            # Swagger/OpenAPI configuration
+│   ├── 📄 SearchInitializer.java        # Initializes Meilisearch settings
+│   ├── 📄 SearchProperties.java         # YAML-based synonym configuration
+│   └── 📄 SecurityConfig.java           # Spring Security + JWT config
 │
-├── src/main/java/com/ecommerce/
-│   │
-│   ├── 📄 ECommerceApplication.java             # Main Spring Boot entry point
-│   │
-│   ├── controller/
-│   │   └── 📄 ProductController.java            # REST API endpoints for products
-│   │
-│   ├── service/
-│   │   ├── 📄 ProductService.java               # Product business logic
-│   │   │   - getAllProducts()
-│   │   │   - getProductById()
-│   │   │   - searchProducts()
-│   │   │   - createProduct()
-│   │   │   - updateProduct()
-│   │   │   - deleteProduct()
-│   │   │
-│   │   └── 📄 CategoryService.java              # Category & Brand business logic
-│   │       - getAllCategories()
-│   │       - createBrand()
-│   │
-│   ├── repository/
-│   │   └── 📄 RepositoriesBundle.java           # Spring Data JPA repositories
-│   │       - ProductRepository
-│   │       - CategoryRepository
-│   │       - BrandRepository
-│   │       - UserRepository
-│   │       - ProductVariantRepository
-│   │       - ProductImageRepository
-│   │       - ProductAttributeRepository
-│   │       - RoleRepository
-│   │
-│   ├── entity/
-│   │   ├── 📄 BaseEntity.java                   # Base class with audit fields
-│   │   │   - id, createdAt, updatedAt, version, active
-│   │   │
-│   │   ├── 📄 Product.java                      # Product entity
-│   │   │   - name, slug, price, stockQuantity
-│   │   │   - @ManyToOne Category, Brand
-│   │   │   - @OneToMany ProductVariant, ProductImage
-│   │   │
-│   │   ├── 📄 Category.java                     # Category entity
-│   │   ├── 📄 Brand.java                        # Brand entity
-│   │   │
-│   │   ├── 📄 ProductVariant.java               # Product variants (size, color)
-│   │   ├── 📄 ProductImage.java                 # Product images & variants
-│   │   ├── 📄 ProductAttribute.java             # Product specifications
-│   │   │
-│   │   ├── 📄 User.java                         # User entity
-│   │   │   - implements UserDetails
-│   │   │   - @ManyToMany Role
-│   │   │
-│   │   └── 📄 Role.java                         # Role entity (ADMIN, USER, SELLER)
-│   │
-│   ├── dto/
-│   │   ├── 📄 ProductDTO.java                   # Product API DTO
-│   │   ├── 📄 DTOBundle.java                    # Other DTOs
-│   │   │   - ProductVariantDTO
-│   │   │   - ProductImageDTO
-│   │   │   - ProductAttributeDTO
-│   │   │   - CategoryDTO
-│   │   │   - BrandDTO
-│   │   │
-│   │   └── auth/
-│   │       └── 📄 AuthDTOs.java
-│   │           - LoginRequest
-│   │           - RegisterRequest
-│   │           - AuthResponse
-│   │           - UserDTO
-│   │           - RefreshTokenRequest
-│   │           - ChangePasswordRequest
-│   │
-│   ├── security/
-│   │   ├── 📄 JwtTokenProvider.java             # JWT token generation & validation
-│   │   │   - generateAccessToken()
-│   │   │   - generateRefreshToken()
-│   │   │   - validateToken()
-│   │   │   - getUsernameFromToken()
-│   │   │
-│   │   └── 📄 JwtAuthenticationFilter.java      # JWT filter & entry point
-│   │       - OncePerRequestFilter
-│   │       - JwtAuthenticationEntryPoint
-│   │
-│   ├── config/
-│   │   ├── 📄 SecurityConfig.java               # Spring Security configuration
-│   │   │   - SecurityFilterChain
-│   │   │   - PasswordEncoder (BCrypt)
-│   │   │   - CORS configuration
-│   │   │
-│   │   ├── 📄 CacheConfig.java                  # Redis cache configuration
-│   │   │   - @EnableCaching
-│   │   │   - RedisTemplate
-│   │   │
-│   │   ├── 📄 AuditingConfig.java               # JPA auditing configuration
-│   │   │   - @EnableJpaAuditing
-│   │   │
-│   │   └── 📄 OpenApiConfig.java                # Swagger/OpenAPI configuration
-│   │       - Swagger UI settings
-│   │       - API documentation
-│   │
-│   └── exception/
-│       ├── 📄 AppExceptions.java                # Custom exception classes
-│       │   - ResourceNotFoundException
-│       │   - BadRequestException
-│       │   - UnauthorizedException
-│       │   - ForbiddenException
-│       │   - ConflictException
-│       │
-│       └── 📄 GlobalExceptionHandler.java       # Global exception handling
-│           - @RestControllerAdvice
-│           - Error response formatting
+├── controller/
+│   ├── 📄 AuthController.java           # Authentication APIs
+│   ├── 📄 BrandController.java          # Brand management APIs
+│   ├── 📄 CategoryController.java       # Category management APIs
+│   ├── 📄 ProductController.java        # Product APIs + Smart Search
+│   └── 📄 UserController.java           # User management APIs
 │
-├── src/main/resources/
+├── dto/
 │   │
-│   ├── 📄 application.yml                       # Spring Boot configuration
-│   │   - Database: PostgreSQL
-│   │   - Cache: Redis
-│   │   - Search: Meilisearch
-│   │   - Security: JWT settings
-│   │   - Logging: Debug levels
+│   ├── auth/authDTOs/
+│   │   ├── 📄 AuthResponse.java
+│   │   ├── 📄 ChangePasswordRequest.java
+│   │   ├── 📄 LoginRequest.java
+│   │   ├── 📄 RefreshTokenRequest.java
+│   │   ├── 📄 RegisterRequest.java
+│   │   └── 📄 UserDTO.java
 │   │
-│   └── db/migration/
-│       └── 📄 V1__initial_schema.sql            # Flyway database migration
-│           - Create all tables
-│           - Create indexes
-│           - Foreign key relationships
+│   ├── DTOBundles/
+│   │   ├── 📄 BrandDTO.java
+│   │   ├── 📄 CategoryDTO.java
+│   │   ├── 📄 ProductImageDTO.java
+│   │   └── 📄 ProductVariantDTO.java
+│   │
+│   ├── 📄 ProductDTO.java
+│   ├── 📄 SearchDocument.java
+│   └── 📄 SearchResponseDTO.java
 │
-└── src/test/
-    └── ... (JUnit 5 + Mockito tests)
+├── entity/
+│   ├── 📄 BaseEntity.java               # Common audit fields
+│   ├── 📄 Brand.java
+│   ├── 📄 Category.java
+│   ├── 📄 Product.java
+│   ├── 📄 ProductImage.java
+│   ├── 📄 ProductVariant.java
+│   ├── 📄 Role.java
+│   └── 📄 User.java
+│
+├── exception/
+│   │
+│   ├── customException/
+│   │   ├── 📄 BadRequestException.java
+│   │   ├── 📄 ConflictException.java
+│   │   ├── 📄 ForbiddenException.java
+│   │   ├── 📄 InternalServerException.java
+│   │   ├── 📄 ResourceNotFoundException.java
+│   │   └── 📄 UnauthorizedException.java
+│   │
+│   └── 📄 GlobalExceptionHandler.java
+│
+├── repository/
+│   │
+│   ├── Bundle/
+│   │   ├── 📄 BrandRepository.java
+│   │   ├── 📄 ProductImageRepository.java
+│   │   ├── 📄 ProductVariantRepository.java
+│   │   ├── 📄 RoleRepository.java
+│   │   └── 📄 UserRepository.java
+│   │
+│   ├── 📄 CategoryRepository.java
+│   └── 📄 ProductRepository.java
+│
+├── security/
+│   │
+│   ├── Filter/
+│   │   ├── 📄 JwtAuthenticationEntryPoint.java
+│   │   └── 📄 JwtAuthenticationFilter.java
+│   │
+│   ├── 📄 CustomUserDetailsService.java
+│   └── 📄 JwtTokenProvider.java
+│
+├── service/
+│   ├── 📄 AuthService.java              # Authentication business logic
+│   ├── 📄 BrandService.java             # Brand business logic
+│   ├── 📄 CategoryService.java          # Category business logic
+│   ├── 📄 ProductService.java           # Product business logic
+│   ├── 📄 SearchService.java            # Meilisearch integration
+│   └── 📄 UserService.java              # User business logic
+│
+└── 📄 ECommerceApplication.java
 ```
-
-## 🔍 Key Files by Purpose
-
-### Configuration Files
-- `pom.xml` - Maven dependencies (Spring Boot, JPA, Security, JWT, Redis, etc.)
-- `application.yml` - Application configuration (DB, cache, JWT secrets)
-- `docker-compose.yml` - Local development environment (PostgreSQL, Redis, Meilisearch)
-
-### Entity Layer
-- `BaseEntity.java` - Common fields (id, timestamps, version for optimistic locking)
-- `Product.java` - Core product entity with @ManyToOne Category/Brand
-- `ProductVariant.java` - Size/color variants with independent stock
-- `ProductImage.java` - Product images with Cloudinary integration
-- `User.java` - User with Spring Security UserDetails
-- `Category.java`, `Brand.java` - Master data entities
-
-### Repository Layer
-- `ProductRepository.java` - Spring Data JPA with custom JPQL queries
-- Supported patterns: `findBySlug()`, `findByCategoryIdAndStatus()`
-- Pagination support for large datasets
-
-### Service Layer
-- `ProductService.java` - Business logic with @Transactional & @Cacheable
-- `CategoryService.java` - Category/Brand operations
-- Handles data validation, caching, cache invalidation
-- Coordinates with repositories and external services
-
-### DTO Layer
-- `ProductDTO.java` - Data transfer object with validation
-- `CategoryDTO.java`, `BrandDTO.java` - Category/brand DTOs
-- `AuthDTOs.java` - Authentication request/response objects
-- Input validation using Jakarta Validation annotations
-
-### Controller Layer
-- `ProductController.java` - REST endpoints with OpenAPI documentation
-- GET endpoints (read-only, cacheable)
-- POST/PUT/DELETE endpoints (@PreAuthorize for ADMIN role)
-- Request/response mapping with DTOs
-
-### Security Layer
-- `JwtTokenProvider.java` - Token generation, validation, claims extraction
-- `JwtAuthenticationFilter.java` - Intercepts requests, validates tokens
-- `SecurityConfig.java` - Spring Security configuration with JWT integration
-
-### Configuration Classes
-- `SecurityConfig.java` - Authentication & authorization setup
-- `CacheConfig.java` - Redis cache configuration
-- `AuditingConfig.java` - Automatic timestamp management
-- `OpenApiConfig.java` - Swagger UI configuration
-
-### Exception Handling
-- `AppExceptions.java` - Custom exception classes for API errors
-- `GlobalExceptionHandler.java` - @RestControllerAdvice for consistent error responses
-
-### Database
-- `V1__initial_schema.sql` - Flyway migration with complete schema
-- Tables: users, products, categories, brands, variants, images, attributes
-- Indexes on commonly queried columns (slug, status, category_id)
-- Foreign key constraints with CASCADE delete
-
-## 🔗 Data Flow Example: Creating a Product
-
-```
-1. Client sends POST /api/products with ProductDTO
-   │
-2. ProductController.createProduct(productDTO)
-   │
-3. JWT filter validates token and sets authentication
-   │
-4. @PreAuthorize("hasRole('ADMIN')") checks role
-   │
-5. @Valid annotation validates productDTO
-   │
-6. ProductService.createProduct(productDTO) @Transactional
-   │
-7. Validation: Check if SKU already exists
-   │
-8. Calculate selling price based on discount
-   │
-9. ProductRepository.save(product) → PostgreSQL
-   │
-10. @CacheEvict invalidates old cache
-    │
-11. (Optional) ApplicationEvent triggers Meilisearch indexing
-    │
-12. Response: 201 Created + ProductDTO
-
-Time taken: ~50-100ms with caching, ~200-300ms cold start
-```
-
-## 📊 Database Relationships
-
-```
-┌─────────────┐
-│   Users     │
-└──────┬──────┘
-       │ @ManyToMany
-       │
-┌──────▼──────┐
-│   Roles     │
-└─────────────┘
-
-┌─────────────────┐        ┌──────────────┐
-│   Categories    │◄───────│   Products   │
-└─────────────────┘ @ManyToOne └──────┬──────────┘
-                                      │
-                              ┌───────┴───────┐
-                              │               │
-                      ┌───────▼──────┐ ┌─────▼──────────┐
-                      │   Variants   │ │    Images      │
-                      └──────────────┘ └────────────────┘
-                              │
-                      ┌───────▼──────┐
-                      │ Variant Imgs │
-                      └──────────────┘
-
-┌──────────────┐
-│    Brands    │◄─────────┐
-└──────────────┘ @ManyToOne
-                           │
-                      ┌────▼─────┐
-                      │ Products  │
-                      └───────────┘
-
-┌────────────────┐
-│   Attributes   │─────┐
-└────────────────┘ @ManyToOne
-                       │
-                  ┌────▼─────┐
-                  │ Products  │
-                  └───────────┘
-```
-
-## 🎯 API Features
-
-- **Pagination**: Size 20, sortable by any field
-- **Caching**: 24-hour TTL in Redis
-- **Search**: Full-text search via Meilisearch
-- **Security**: JWT + Role-based access control
-- **Validation**: Input validation with error messages
-- **Documentation**: Swagger UI at /api/swagger-ui.html
-
-## 🚀 Next Steps to Enhance
-
-1. **Add Order Management** - Order, OrderItem, Payment entities
-2. **Add Reviews & Ratings** - Review, Rating entities
-3. **Add Wishlist** - Wishlist, WishlistItem entities
-4. **Add Cart** - Cart, CartItem for user sessions
-5. **Add Admin Dashboard** - Analytics, reporting endpoints
-6. **Email Integration** - Send confirmation emails
-7. **Payment Gateway** - Stripe, PayPal integration
-8. **Inventory Alerts** - Stock notifications
-9. **Advanced Search Filters** - Price range, color, size filters
-10. **Analytics** - Track user behavior, popular products
 
 ---
 
-**Project created with ❤️ following Spring Boot best practices**
+# Smart Search Features
+
+Implemented using Meilisearch:
+
+- Typo Tolerance
+- Autocomplete
+- Synonym Search
+- Fast Product Search
+- YAML-based Synonym Configuration
+
+---
+
+# Security Features
+
+- JWT Authentication
+- Stateless Authorization
+- BCrypt Password Encryption
+- Role-Based Access Control (RBAC)
+- Admin Protected APIs
+
+---
+
+# Redis Usage
+
+Redis is used for caching frequently accessed APIs such as:
+
+- Categories
+- Brands
+- Product lookups
+
+to improve performance and reduce database load.
+
+---
+
+# Swagger Documentation
+
+Swagger UI:
+
+```text
+http://localhost:8080/api/swagger-ui/index.html
+```
+
+---
+
+# Search Architecture
+
+```text
+Client
+   ↓
+ProductController
+   ↓
+SearchService
+   ↓
+Meilisearch
+```
+
+---
+
+# Authentication Flow
+
+```text
+User Login
+   ↓
+JWT Token Generated
+   ↓
+Authorization Header
+   ↓
+JWT Filter Validation
+   ↓
+Protected APIs Access
+```
+
+---
+
+# Planned Improvements
+
+- AI-powered Semantic Search
+- Vector Embeddings
+- Recommendation Engine
+- Search Analytics
+- Elasticsearch/OpenSearch Support
+- Cloudinary Image Uploads
+- CI/CD Pipeline
+- Unit & Integration Testing
+
+## 📊 Database Relationships
+
+## User ↔ Role
+
+```text
+Many-to-Many
+```
+
+A user can have multiple roles and a role can belong to multiple users.
+
+Example:
+
+```text
+USER
+ADMIN
+```
+
+Implemented using:
+
+```text
+user_roles
+```
+
+join table.
+
+---
+
+## Category ↔ Product
+
+```text
+One-to-Many
+```
+
+A category can contain multiple products.
+
+Example:
+
+```text
+Electronics
+ ├── iPhone
+ ├── MacBook
+ └── Gaming Laptop
+```
+
+---
+
+## Brand ↔ Product
+
+```text
+One-to-Many
+```
+
+A brand can contain multiple products.
+
+Example:
+
+```text
+Apple
+ ├── iPhone
+ ├── MacBook
+ └── Apple Watch
+```
+
+---
+
+## Product ↔ ProductVariant
+
+```text
+One-to-Many
+```
+
+A product can have multiple variants.
+
+Example:
+
+```text
+iPhone 15
+ ├── 128GB
+ ├── 256GB
+ └── 512GB
+```
+
+---
+
+## Product ↔ ProductImage
+
+```text
+One-to-Many
+```
+
+A product can contain multiple images.
+
+Example:
+
+```text
+iPhone 15
+ ├── front-view.jpg
+ ├── side-view.jpg
+ └── back-view.jpg
+```
+
+---
+
+# Entity Relationship Overview
+
+```text
+User
+ └──< user_roles >── Role
+
+Category
+ └── Product
+        ├── ProductVariant
+        └── ProductImage
+
+Brand
+ └── Product
+```
