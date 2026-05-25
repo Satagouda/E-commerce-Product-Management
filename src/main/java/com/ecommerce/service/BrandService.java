@@ -24,7 +24,7 @@ public class BrandService {
     /**
      * Get all brands
      */
-//    @Cacheable(value = "brands", key = "'all'")
+    @Cacheable(value = "brands", key = "'all'")
     public List<BrandDTO> getAllBrands() {
         log.debug("Fetching all brands");
         return brandRepository.findAllActive().stream()
@@ -35,7 +35,7 @@ public class BrandService {
     /**
      * Get brand by ID
      */
-//    @Cacheable(value = "brands", key = "#id")
+    @Cacheable(value = "brands", key = "#id")
     public BrandDTO getBrandById(Long id) {
         log.debug("Fetching brand with ID: {}", id);
         Brand brand = brandRepository.findById(id)
@@ -46,7 +46,7 @@ public class BrandService {
     /**
      * Get brand by slug
      */
-//    @Cacheable(value = "brandsBySlug", key = "#slug")
+    @Cacheable(value = "brandsBySlug", key = "#slug")
     public BrandDTO getBrandBySlug(String slug) {
         log.debug("Fetching brand with slug: {}", slug);
         Brand brand = brandRepository.findBySlug(slug)
@@ -58,7 +58,7 @@ public class BrandService {
      * Create new brand
      */
     @Transactional
-//    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
+    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
     public BrandDTO createBrand(BrandDTO brandDTO) {
         log.info("Creating new brand: {}", brandDTO.getName());
 
@@ -84,7 +84,7 @@ public class BrandService {
      * Update brand
      */
     @Transactional
-//    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
+    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
     public BrandDTO updateBrand(Long id, BrandDTO brandDTO) {
         log.info("Updating brand with ID: {}", id);
 
@@ -107,7 +107,7 @@ public class BrandService {
      * Delete brand
      */
     @Transactional
-//    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
+    @CacheEvict(value = {"brands", "brandsBySlug"}, allEntries = true)
     public void deleteBrand(Long id) {
         log.info("Deleting brand with ID: {}", id);
 

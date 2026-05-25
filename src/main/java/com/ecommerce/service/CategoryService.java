@@ -24,7 +24,7 @@ public class CategoryService {
     /**
      * Get all categories
      */
-//    @Cacheable(value = "categories", key = "'all'")
+    @Cacheable(value = "categories", key = "'all'")
     public List<CategoryDTO> getAllCategories() {
         log.debug("Fetching all categories");
         return categoryRepository.findAllActive().stream()
@@ -35,7 +35,7 @@ public class CategoryService {
     /**
      * Get category by ID
      */
-//    @Cacheable(value = "categories", key = "#id")
+    @Cacheable(value = "categories", key = "#id")
     public CategoryDTO getCategoryById(Long id) {
         log.debug("Fetching category with ID: {}", id);
         Category category = categoryRepository.findById(id)
@@ -46,7 +46,7 @@ public class CategoryService {
     /**
      * Get category by slug
      */
-//    @Cacheable(value = "categoriesBySlug", key = "#slug")
+    @Cacheable(value = "categoriesBySlug", key = "#slug")
     public CategoryDTO getCategoryBySlug(String slug) {
         log.debug("Fetching category with slug: {}", slug);
         Category category = categoryRepository.findBySlug(slug)
@@ -58,7 +58,7 @@ public class CategoryService {
      * Create new category
      */
     @Transactional
-//    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
+    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         log.info("Creating new category: {}", categoryDTO.getName());
         
@@ -84,7 +84,7 @@ public class CategoryService {
      * Update category
      */
     @Transactional
-//    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
+    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
     public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
         log.info("Updating category with ID: {}", id);
         
@@ -107,7 +107,7 @@ public class CategoryService {
      * Delete category
      */
     @Transactional
-//    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
+    @CacheEvict(value = {"categories", "categoriesBySlug"}, allEntries = true)
     public void deleteCategory(Long id) {
         log.info("Deleting category with ID: {}", id);
         
