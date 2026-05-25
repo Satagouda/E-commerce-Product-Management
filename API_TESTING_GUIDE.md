@@ -132,19 +132,54 @@ POST /products
 
 ```json
 {
-  "name": "iPhone 15 Pro",
-  "slug": "iphone-15-pro",
-  "sku": "IPHONE15PRO",
-  "shortDescription": "Apple flagship smartphone",
-  "description": "Latest Apple iPhone",
-  "regularPrice": 149999,
-  "salePrice": 139999,
+  "name": "iPhone Charger",
+  "slug": "iphone-charger",
+  "sku": "IPHONECHARGER",
+  "shortDescription": "Fast charging adapter",
+  "description": "20W Apple charger",
+  "regularPrice": 2999,
+  "salePrice": 2499,
   "taxPercentage": 18,
-  "stockQuantity": 20,
-  "featuredImage": "https://cdn.example.com/iphone15.jpg",
+  "stockQuantity": 50,
+  "featuredImage": "https://cdn.example.com/charger.jpg",
   "status": "ACTIVE",
   "categoryId": 1,
-  "brandId": 1
+  "brandId": 1,
+
+  "variants": [
+    {
+      "variantName": "Color",
+      "variantValue": "White",
+      "sku": "IPHONECHARGER-WHITE",
+      "price": 2499,
+      "stock": 20
+    }
+  ],
+
+  "images": [
+    {
+      "imagePath": "https://cdn.example.com/charger-front.jpg",
+      "sortOrder": 1,
+      "altText": "Front View"
+    }
+  ]
+}
+```
+
+### Expected Response
+
+```json
+{
+  "success": true,
+  "message": "Product created successfully",
+  "data": {
+    "id": 8,
+    "name": "iPhone Charger",
+    "slug": "iphone-charger",
+    "sku": "IPHONECHARGER",
+    "status": "ACTIVE"
+  },
+  "timestamp": "2026-05-26T12:30:00"
 }
 ```
 
@@ -210,7 +245,17 @@ MacBook Air M3
 
 # Additional Product Test Data
 
-## MacBook Air M3
+## 💻 MacBook Air M3
+
+### Request
+
+```http
+POST /api/products
+Authorization: Bearer <ADMIN_JWT_TOKEN>
+Content-Type: application/json
+```
+
+### Request Body
 
 ```json
 {
@@ -230,9 +275,36 @@ MacBook Air M3
 }
 ```
 
+### Expected Response
+
+```json
+{
+  "success": true,
+  "message": "Product created successfully",
+  "data": {
+    "id": 6,
+    "name": "MacBook Air M3",
+    "slug": "macbook-air-m3",
+    "sku": "MACBOOKAIRM3",
+    "status": "ACTIVE"
+  },
+  "timestamp": "2026-05-26T12:30:00"
+}
+```
+
 ---
 
-## Gaming Laptop
+## 🎮 Gaming Laptop
+
+### Request
+
+```http
+POST /api/products
+Authorization: Bearer <ADMIN_JWT_TOKEN>
+Content-Type: application/json
+```
+
+### Request Body
 
 ```json
 {
@@ -249,6 +321,23 @@ MacBook Air M3
   "status": "ACTIVE",
   "categoryId": 1,
   "brandId": 2
+}
+```
+
+### Expected Response
+
+```json
+{
+  "success": true,
+  "message": "Product created successfully",
+  "data": {
+    "id": 7,
+    "name": "Gaming Laptop",
+    "slug": "gaming-laptop",
+    "sku": "GAMINGLAPTOP01",
+    "status": "ACTIVE"
+  },
+  "timestamp": "2026-05-26T12:35:00"
 }
 ```
 

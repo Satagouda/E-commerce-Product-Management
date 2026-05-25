@@ -1,6 +1,8 @@
 package com.ecommerce.dto;
 
 
+import com.ecommerce.dto.DTOBundles.ProductImageDTO;
+import com.ecommerce.dto.DTOBundles.ProductVariantDTO;
 import com.ecommerce.entity.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -8,6 +10,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -79,4 +82,8 @@ public class ProductDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private List<ProductVariantDTO> variants;
+
+    private List<ProductImageDTO> images;
 }

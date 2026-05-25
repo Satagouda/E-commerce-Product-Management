@@ -2,9 +2,7 @@ package com.ecommerce.service;
 
 
 import com.ecommerce.dto.ProductDTO;
-import com.ecommerce.entity.Brand;
-import com.ecommerce.entity.Category;
-import com.ecommerce.entity.Product;
+import com.ecommerce.entity.*;
 import com.ecommerce.exception.customException.ResourceNotFoundException;
 
 import com.ecommerce.repository.Bundle.BrandRepository;
@@ -15,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -81,6 +82,46 @@ public class ProductService {
                 .brand(brand)
                 .build();
 
+        if (productDTO.getVariants() != null) {
+
+            Set<ProductVariant> variants = productDTO.getVariants()
+                    .stream()
+                    .map(variantDTO -> {
+
+                        ProductVariant variant = ProductVariant.builder()
+                                .variantName(variantDTO.getVariantName())
+                                .variantValue(variantDTO.getVariantValue())
+                                .sku(variantDTO.getSku())
+                                .price(variantDTO.getPrice())
+                                .stock(variantDTO.getStock())
+                                .product(product)
+                                .build();
+
+                        return variant;
+                    })
+                    .collect(Collectors.toSet());
+
+            product.setVariants(variants);
+        }
+        if (productDTO.getImages() != null) {
+
+            Set<ProductImage> images = productDTO.getImages()
+                    .stream()
+                    .map(imageDTO -> {
+
+                        ProductImage image = ProductImage.builder()
+                                .imagePath(imageDTO.getImagePath())
+                                .sortOrder(imageDTO.getSortOrder())
+                                .altText(imageDTO.getAltText())
+                                .product(product)
+                                .build();
+
+                        return image;
+                    })
+                    .collect(Collectors.toSet());
+
+            product.setImages(images);
+        }
         Product savedProduct = productRepository.save(product);
         searchService.indexProduct(savedProduct);
         log.info(
